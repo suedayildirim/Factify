@@ -50,6 +50,29 @@ npm run start
 
 `frontend/.env.example` dosyasini referans alip `frontend/.env` olusturun.
 
+## Deploy (Vercel)
+
+- Repo kokunde `vercel.json` var; Vercel projesini bu repo ile baglayinca `frontend/` dizinini proje kok dizini olarak kullanir.
+- Vercel panelinden `GEMINI_API_KEY` ortam degiskenini ekleyin (Production + Preview).
+
+## Test
+
+Unit + API integration:
+
+```bash
+cd frontend
+npm run test:run
+```
+
+E2E (Playwright):
+
+```bash
+cd frontend
+# ilk kez calistiracaksan:
+npx playwright install
+npm run test:e2e
+```
+
 ## Lisans
 
 Bu proje su an icin ozel/deneysel gelistirme kapsamindadir.

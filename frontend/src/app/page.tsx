@@ -86,8 +86,35 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
+  const [history, setHistory] = useState<{ at: number; score: number; preview: string; text: string }[]>([]);
 
   const canAnalyze = useMemo(() => text.trim().length >= 20 && !loading, [text, loading]);
+
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem('factify.history');
+      const parsed = raw ? (JSON.parse(raw) as any[]) : [];
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter(Boolean)
+        .slice(0, 8)
+        .map((x) => ({
+          at: Number(x.at) || Date.now(),
+          score: Number(x.score) || 0,
+          preview: String(x.preview || ''),
+          text: String(x.text || ''),
+        }));
+    } catch {
+      return [];
+    }
+  }
+
+  // lazy init after first render (client only)
+  useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    setHistory(loadHistory());
+    return null;
+  }, []);
 
   async function onAnalyze() {
     setError(null);
@@ -111,7 +138,20 @@ export default function HomePage() {
         return;
       }
 
-      setResult(data as AnalyzeResponse);
+      const next = data as AnalyzeResponse;
+      setResult(next);
+
+      if (typeof window !== 'undefined') {
+        const item = {
+          at: Date.now(),
+          score: next.score ?? 0,
+          preview: text.trim().slice(0, 90),
+          text,
+        };
+        const merged = [item, ...loadHistory()].slice(0, 8);
+        localStorage.setItem('factify.history', JSON.stringify(merged));
+        setHistory(merged);
+      }
     } catch {
       setError('İstek zaman aşımına uğradı ya da bağlantı kesildi.');
     } finally {
@@ -176,6 +216,40 @@ export default function HomePage() {
               <h2 className="mb-3 mt-2 text-sm font-semibold text-slate-200">Bağlamsal Doğrulama</h2>
               <FindingsList items={result.context} category="context" />
             </div>
+          </div>
+        </section>
+      ) : null}
+
+      {history.length ? (
+        <section className="mt-6 rounded-xl border border-slate-800 bg-slate-950/20 p-5">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-slate-200">Geçmiş</h2>
+            <button
+              className="ml-auto rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 ring-1 ring-slate-800 hover:bg-slate-800"
+              onClick={() => {
+                localStorage.removeItem('factify.history');
+                setHistory([]);
+              }}
+            >
+              Temizle
+            </button>
+          </div>
+          <div className="mt-3 grid gap-2">
+            {history.map((h) => (
+              <button
+                key={h.at}
+                className="rounded-lg border border-slate-800 bg-slate-900/30 p-3 text-left hover:bg-slate-900/50"
+                onClick={() => setText(h.text)}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="text-xs font-semibold text-slate-200">Skor: {h.score}%</div>
+                  <div className="text-xs text-slate-500">
+                    {new Date(h.at).toLocaleString('tr-TR')}
+                  </div>
+                </div>
+                <div className="mt-1 line-clamp-2 text-xs text-slate-300">{h.preview}</div>
+              </button>
+            ))}
           </div>
         </section>
       ) : null}
