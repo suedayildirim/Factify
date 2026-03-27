@@ -23,8 +23,8 @@ function ScoreColor({ score }: { score: number }) {
     score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-lime-500' : score >= 35 ? 'bg-amber-500' : 'bg-rose-500';
   return (
     <div className="flex items-center gap-3">
-      <div className="text-sm font-semibold tracking-tight">Güven Skoru</div>
-      <div className="text-sm text-slate-200">{score}%</div>
+      <div className="text-sm font-semibold tracking-tight text-white">Güven Skoru</div>
+      <div className="text-sm text-white">{score}%</div>
       <div className="ml-auto h-2 w-40 rounded-full bg-slate-800">
         <div className={`h-2 rounded-full ${colorClass}`} style={{ width: `${score}%` }} />
       </div>
@@ -34,12 +34,12 @@ function ScoreColor({ score }: { score: number }) {
 
 function FindingsList({ items, category }: { items: Finding[]; category: 'language' | 'logic' | 'context' }) {
   if (!items.length) {
-    return <div className="text-sm text-slate-400">Uygun bulgu bulunamadı.</div>;
+    return <div className="text-sm text-white/70">Uygun bulgu bulunamadı.</div>;
   }
   return (
     <div className="space-y-3">
       {items.map((f, idx) => (
-        <div key={`${f.title}-${idx}`} className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+        <div key={`${f.title}-${idx}`} className="rounded-2xl border border-white/15 bg-white p-4 text-slate-900">
           <div className="flex flex-wrap items-center gap-2">
             <div className="text-sm font-semibold">{f.title}</div>
             <span
@@ -52,21 +52,21 @@ function FindingsList({ items, category }: { items: Finding[]; category: 'langua
           </div>
 
           {f.excerpt ? (
-            <div className="mt-2 rounded-md bg-slate-950/40 px-3 py-2 text-xs text-slate-300 ring-1 ring-slate-800">
+            <div className="mt-2 rounded-xl bg-slate-950/5 px-3 py-2 text-xs text-slate-700 ring-1 ring-slate-200">
               “{f.excerpt}”
             </div>
           ) : null}
 
-          <div className="mt-2 text-sm text-slate-200">{f.explanation}</div>
+          <div className="mt-2 text-sm text-slate-800">{f.explanation}</div>
 
           <div className="mt-3 grid gap-2 md:grid-cols-2">
-            <div className="rounded-md bg-slate-950/30 px-3 py-2 text-xs text-slate-300 ring-1 ring-slate-800">
-              <div className="font-semibold text-slate-200">Skora etkisi</div>
-              <div className="mt-0.5 text-slate-300">{severityMeta(f.severity).impact}</div>
+            <div className="rounded-xl bg-slate-950/5 px-3 py-2 text-xs text-slate-700 ring-1 ring-slate-200">
+              <div className="font-semibold text-slate-900">Skora etkisi</div>
+              <div className="mt-0.5 text-slate-700">{severityMeta(f.severity).impact}</div>
             </div>
-            <div className="rounded-md bg-slate-950/30 px-3 py-2 text-xs text-slate-300 ring-1 ring-slate-800">
-              <div className="font-semibold text-slate-200">Ne yapabilirsin?</div>
-              <div className="mt-0.5 text-slate-300">
+            <div className="rounded-xl bg-slate-950/5 px-3 py-2 text-xs text-slate-700 ring-1 ring-slate-200">
+              <div className="font-semibold text-slate-900">Ne yapabilirsin?</div>
+              <div className="mt-0.5 text-slate-700">
                 {category === 'language'
                   ? 'Aşırı kesinlik/abartı içeren ifadeleri nötrleştir; iddiayı somut veriyle destekle.'
                   : category === 'logic'
@@ -165,21 +165,21 @@ export default function HomePage() {
   return (
     <main className="mx-auto max-w-3xl p-6">
       <header className="mb-5">
-        <h1 className="text-3xl font-bold">Factify</h1>
-        <p className="mt-1 text-slate-300">
+        <h1 className="text-3xl font-bold text-white">Factify</h1>
+        <p className="mt-1 text-white">
           Şüpheli bir haber/iddia metnini yapıştır, Factify dil, mantık ve bağlam uyumunu
-          analiz ederek sana bir <span className="font-semibold text-slate-200">Güven Skoru</span>{' '}
+          analiz ederek sana bir <span className="font-semibold text-white">Güven Skoru</span>{' '}
           sunar.
         </p>
       </header>
 
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-        <label className="mb-2 block text-sm font-semibold text-slate-200">Metin Girişi</label>
+      <section className="rounded-3xl border border-white bg-white p-5">
+        <label className="mb-2 block text-sm font-semibold text-slate-900">Metin Girişi</label>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Örneğin: 'Bu iddia şu sebeple kesinlikle doğrudur...' şeklinde şüpheli metni buraya yapıştır."
-          className="min-h-40 w-full resize-none rounded-2xl bg-black/20 p-3 text-sm text-white placeholder:text-white/50 outline-none ring-1 ring-white/10 focus:ring-white/25"
+          className="min-h-40 w-full resize-none rounded-3xl bg-[#06162b] p-3 text-sm text-white placeholder:text-white/60 outline-none ring-2 ring-white/70 focus:ring-white"
           minLength={20}
           maxLength={10_000}
         />
@@ -193,27 +193,27 @@ export default function HomePage() {
             {loading ? 'Analiz ediliyor...' : 'Analiz Başlat'}
           </button>
           {text.trim().length > 0 && text.trim().length < 20 ? (
-            <div className="text-xs text-amber-300">En az 20 karakter gir.</div>
+            <div className="text-xs text-slate-700">En az 20 karakter gir.</div>
           ) : null}
-          {error ? <div className="ml-auto text-xs text-rose-300">{error}</div> : null}
+          {error ? <div className="ml-auto text-xs text-rose-700">{error}</div> : null}
         </div>
       </section>
 
       {result ? (
-        <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+        <section className="mt-6 rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur">
           <ScoreColor score={score} />
 
           <div className="mt-5 grid gap-4 md:grid-cols-1">
             <div>
-              <h2 className="mb-3 text-sm font-semibold text-slate-200">Dil Analizi</h2>
+              <h2 className="mb-3 text-sm font-semibold text-white">Dil Analizi</h2>
               <FindingsList items={result.language} category="language" />
             </div>
             <div>
-              <h2 className="mb-3 mt-2 text-sm font-semibold text-slate-200">Mantık Kontrolü</h2>
+              <h2 className="mb-3 mt-2 text-sm font-semibold text-white">Mantık Kontrolü</h2>
               <FindingsList items={result.logic} category="logic" />
             </div>
             <div>
-              <h2 className="mb-3 mt-2 text-sm font-semibold text-slate-200">Bağlamsal Doğrulama</h2>
+              <h2 className="mb-3 mt-2 text-sm font-semibold text-white">Bağlamsal Doğrulama</h2>
               <FindingsList items={result.context} category="context" />
             </div>
           </div>
@@ -221,9 +221,9 @@ export default function HomePage() {
       ) : null}
 
       {history.length ? (
-        <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+        <section className="mt-6 rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-slate-200">Geçmiş</h2>
+            <h2 className="text-sm font-semibold text-white">Geçmiş</h2>
             <button
               className="ml-auto rounded-md bg-black/20 px-3 py-1.5 text-xs font-semibold text-white ring-1 ring-white/10 hover:bg-black/30"
               onClick={() => {
