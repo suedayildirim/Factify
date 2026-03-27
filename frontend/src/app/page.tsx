@@ -173,29 +173,31 @@ export default function HomePage() {
         </p>
       </header>
 
-      <section className="rounded-3xl border border-white bg-white p-5">
+      <section>
         <label className="mb-2 block text-sm font-semibold text-white">Metin Girişi</label>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Örneğin: 'Bu iddia şu sebeple kesinlikle doğrudur...' şeklinde şüpheli metni buraya yapıştır."
-          className="min-h-40 w-full resize-none rounded-3xl bg-[#06162b] p-3 text-sm text-white placeholder:text-white/60 outline-none ring-2 ring-white/70 focus:ring-white"
-          minLength={20}
-          maxLength={10_000}
-        />
+        <div className="rounded-3xl border border-white bg-white p-5">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Örneğin: 'Bu iddia şu sebeple kesinlikle doğrudur...' şeklinde şüpheli metni buraya yapıştır."
+            className="min-h-40 w-full resize-none rounded-3xl bg-[#06162b] p-3 text-sm text-white placeholder:text-white/60 outline-none ring-2 ring-white/70 focus:ring-white"
+            minLength={20}
+            maxLength={10_000}
+          />
 
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            onClick={onAnalyze}
-            disabled={!canAnalyze}
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#06162b] transition disabled:cursor-not-allowed disabled:opacity-60 hover:bg-white/90"
-          >
-            {loading ? 'Analiz ediliyor...' : 'Analiz Başlat'}
-          </button>
-          {text.trim().length > 0 && text.trim().length < 20 ? (
-            <div className="text-xs text-slate-700">En az 20 karakter gir.</div>
-          ) : null}
-          {error ? <div className="ml-auto text-xs text-rose-700">{error}</div> : null}
+          <div className="mt-4 flex items-center gap-3">
+            <button
+              onClick={onAnalyze}
+              disabled={!canAnalyze}
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#06162b] transition disabled:cursor-not-allowed disabled:opacity-60 hover:bg-white/90"
+            >
+              {loading ? 'Analiz ediliyor...' : 'Analiz Başlat'}
+            </button>
+            {text.trim().length > 0 && text.trim().length < 20 ? (
+              <div className="text-xs text-slate-700">En az 20 karakter gir.</div>
+            ) : null}
+            {error ? <div className="ml-auto text-xs text-rose-700">{error}</div> : null}
+          </div>
         </div>
       </section>
 
