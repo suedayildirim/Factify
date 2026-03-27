@@ -39,7 +39,7 @@ function FindingsList({ items, category }: { items: Finding[]; category: 'langua
   return (
     <div className="space-y-3">
       {items.map((f, idx) => (
-        <div key={`${f.title}-${idx}`} className="rounded-2xl border border-white/15 bg-white p-4 text-slate-900">
+        <div key={`${f.title}-${idx}`} className="rounded-2xl border border-white/15 bg-white/5 p-4 text-white backdrop-blur">
           <div className="flex flex-wrap items-center gap-2">
             <div className="text-sm font-semibold">{f.title}</div>
             <span
@@ -52,21 +52,21 @@ function FindingsList({ items, category }: { items: Finding[]; category: 'langua
           </div>
 
           {f.excerpt ? (
-            <div className="mt-2 rounded-xl bg-slate-950/5 px-3 py-2 text-xs text-slate-700 ring-1 ring-slate-200">
+            <div className="mt-2 rounded-xl bg-black/20 px-3 py-2 text-xs text-white/85 ring-1 ring-white/10">
               “{f.excerpt}”
             </div>
           ) : null}
 
-          <div className="mt-2 text-sm text-slate-800">{f.explanation}</div>
+          <div className="mt-2 text-sm text-white/90">{f.explanation}</div>
 
           <div className="mt-3 grid gap-2 md:grid-cols-2">
-            <div className="rounded-xl bg-slate-950/5 px-3 py-2 text-xs text-slate-700 ring-1 ring-slate-200">
-              <div className="font-semibold text-slate-900">Skora etkisi</div>
-              <div className="mt-0.5 text-slate-700">{severityMeta(f.severity).impact}</div>
+            <div className="rounded-xl bg-black/20 px-3 py-2 text-xs text-white/85 ring-1 ring-white/10">
+              <div className="font-semibold text-white">Skora etkisi</div>
+              <div className="mt-0.5 text-white/80">{severityMeta(f.severity).impact}</div>
             </div>
-            <div className="rounded-xl bg-slate-950/5 px-3 py-2 text-xs text-slate-700 ring-1 ring-slate-200">
-              <div className="font-semibold text-slate-900">Ne yapabilirsin?</div>
-              <div className="mt-0.5 text-slate-700">
+            <div className="rounded-xl bg-black/20 px-3 py-2 text-xs text-white/85 ring-1 ring-white/10">
+              <div className="font-semibold text-white">Ne yapabilirsin?</div>
+              <div className="mt-0.5 text-white/80">
                 {category === 'language'
                   ? 'Aşırı kesinlik/abartı içeren ifadeleri nötrleştir; iddiayı somut veriyle destekle.'
                   : category === 'logic'
@@ -174,7 +174,7 @@ export default function HomePage() {
       </header>
 
       <section className="rounded-3xl border border-white bg-white p-5">
-        <label className="mb-2 block text-sm font-semibold text-slate-900">Metin Girişi</label>
+        <label className="mb-2 block text-sm font-semibold text-white">Metin Girişi</label>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -188,7 +188,7 @@ export default function HomePage() {
           <button
             onClick={onAnalyze}
             disabled={!canAnalyze}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 hover:bg-indigo-500"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#06162b] transition disabled:cursor-not-allowed disabled:opacity-60 hover:bg-white/90"
           >
             {loading ? 'Analiz ediliyor...' : 'Analiz Başlat'}
           </button>
