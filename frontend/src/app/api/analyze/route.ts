@@ -6,6 +6,7 @@ type ErrorResponse = { message: string };
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
+const MAX_INPUT_CHARS = 20_000;
 const ipBuckets = new Map<string, number[]>();
 
 function getClientIp(req: Request) {
@@ -65,12 +66,32 @@ function mockAnalyze(): AnalyzeResponse {
   };
 }
 
+function cleanText(input: string) {
+  return input.trim().replace(/\s+/g, ' ');
+}
+
+function normalizeModelFindings(arr: Finding[]) {
+  return arr.map((f) => ({
+    title: String(f.title ?? '').trim().slice(0, 120) || 'Bulguyla ilgili bir detay',
+    explanation:
+      String(f.explanation ?? '')
+        .trim()
+        .slice(0, 420) || 'Açıklama bilgisi bulunamadı.',
+    excerpt: f.excerpt
+      ? String(f.excerpt)
+          .trim()
+          .slice(0, 160)
+      : undefined,
+    severity: f.severity,
+  }));
+}
+
 async function analyzeWithGemini(text: string): Promise<AnalyzeResponse> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return mockAnalyze();
 
   // Gemini REST request format: POST .../models/{model}:generateContent
-  const model = 'gemini-1.5-pro';
+  const model = process.env.GEMINI_MODEL || 'gemini-1.5-pro';
 
   const prompt = `Aşağıdaki metni Factify kriterlerine göre değerlendir:
 
@@ -97,6 +118,8 @@ Bağlamsal doğrulama:
 - excerpt: Metinden 10-140 karakterlik KISA bir alıntı (bulgu metne dayanıyorsa).
 - severity: 0=bilgi, 1=düşük risk, 2=orta risk, 3=yüksek risk.
 - Her kategori için 0-6 bulgu üret. Uydurma alıntı verme; emin değilsen excerpt alanını boş bırak.
+- Her bulgu kısa ve açık olsun; title max 120, explanation max 420 karakter olsun.
+- JSON dışında hiçbir metin döndürme.
 
 Metin:
 ${text}`;
@@ -144,9 +167,9 @@ ${text}`;
       const logicRaw = Array.isArray(parsed.logic) ? parsed.logic : [];
       const contextRaw = Array.isArray(parsed.context) ? parsed.context : [];
 
-      const language = normalizeFindings(languageRaw);
-      const logic = normalizeFindings(logicRaw);
-      const context = normalizeFindings(contextRaw);
+      const language = normalizeModelFindings(normalizeFindings(languageRaw));
+      const logic = normalizeModelFindings(normalizeFindings(logicRaw));
+      const context = normalizeModelFindings(normalizeFindings(contextRaw));
 
       const score = computeScore({ language, logic, context });
 
@@ -169,6 +192,14 @@ ${text}`;
 export async function POST(req: Request) {
   const startedAt = Date.now();
   try {
+    const contentType = req.headers.get('content-type') || '';
+    if (!contentType.toLowerCase().includes('application/json')) {
+      return NextResponse.json<ErrorResponse>(
+        { message: 'İçerik tipi application/json olmalı.' },
+        { status: 415 }
+      );
+    }
+
     const ip = getClientIp(req);
     if (!checkRateLimit(ip)) {
       return NextResponse.json<ErrorResponse>(
@@ -188,9 +219,18 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json<ErrorResponse>(
+        { message: 'Geçersiz JSON formatı.' },
+        { status: 400 }
+      );
+    }
+
     const text = String(body?.text ?? '');
-    const normalized = text.trim().replace(/\s+/g, ' ');
+    const normalized = cleanText(text);
 
     if (!normalized || normalized.length < 20) {
       return NextResponse.json<ErrorResponse>(
@@ -200,7 +240,7 @@ export async function POST(req: Request) {
     }
 
     // Hard limit to reduce token/cost risk.
-    const input = normalized.slice(0, 20_000);
+    const input = normalized.slice(0, MAX_INPUT_CHARS);
 
     const result = await analyzeWithGemini(input);
     // PII-free operational log (no raw text, no IP).

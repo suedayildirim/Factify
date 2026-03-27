@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Montserrat } from 'next/font/google';
 import './globals.css';
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Factify',
@@ -10,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="tr" className="dark">
-      <body className="min-h-screen bg-[#06162b] text-white antialiased">
+      <body className={`${montserrat.className} min-h-screen bg-[#D6EAF8] text-slate-900 antialiased`}>
         {children}
       </body>
     </html>
