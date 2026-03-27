@@ -32,6 +32,50 @@ function ScoreColor({ score }: { score: number }) {
   );
 }
 
+function TrustMeter({ score }: { score: number }) {
+  const colorClass =
+    score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-lime-500' : score >= 35 ? 'bg-amber-500' : 'bg-rose-500';
+  const label =
+    score >= 80
+      ? 'Yüksek güven'
+      : score >= 60
+        ? 'Orta-yüksek güven'
+        : score >= 35
+          ? 'Dikkatli yaklaş'
+          : 'Düşük güven';
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <div className="text-sm font-semibold text-slate-900">Güven Metresi</div>
+        <div className="text-xs text-slate-700">{label}</div>
+      </div>
+      <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200">
+        <div className={`h-3 rounded-full ${colorClass}`} style={{ width: `${score}%` }} />
+      </div>
+      <div className="mt-2 flex justify-between text-[11px] text-slate-600">
+        <span>0</span>
+        <span>50</span>
+        <span>100</span>
+      </div>
+    </div>
+  );
+}
+
+function ResultSkeleton() {
+  return (
+    <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="animate-pulse space-y-4">
+        <div className="h-5 w-40 rounded-lg bg-slate-200" />
+        <div className="h-3 w-full rounded-full bg-slate-200" />
+        <div className="h-20 rounded-2xl bg-slate-100" />
+        <div className="h-20 rounded-2xl bg-slate-100" />
+        <div className="h-20 rounded-2xl bg-slate-100" />
+      </div>
+    </section>
+  );
+}
+
 function FindingsList({ items, category }: { items: Finding[]; category: 'language' | 'logic' | 'context' }) {
   if (!items.length) {
     return <div className="text-sm text-slate-800">Uygun bulgu bulunamadı.</div>;
@@ -152,8 +196,12 @@ export default function HomePage() {
         localStorage.setItem('factify.history', JSON.stringify(merged));
         setHistory(merged);
       }
-    } catch {
-      setError('İstek zaman aşımına uğradı ya da bağlantı kesildi.');
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('İstek zaman aşımına uğradı. Lütfen tekrar dene.');
+      } else {
+        setError('Bağlantı hatası oluştu. İnternetini kontrol edip tekrar dene.');
+      }
     } finally {
       clearTimeout(timeout);
       setLoading(false);
@@ -204,6 +252,9 @@ export default function HomePage() {
       {result ? (
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
           <ScoreColor score={score} />
+          <div className="mt-4">
+            <TrustMeter score={score} />
+          </div>
 
           <div className="mt-5 space-y-6">
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -227,6 +278,8 @@ export default function HomePage() {
           </div>
         </section>
       ) : null}
+
+      {loading ? <ResultSkeleton /> : null}
 
       {history.length ? (
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
@@ -262,16 +315,7 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      {loading ? (
-        <div className="mt-4 animate-pulse rounded-xl border border-slate-200 bg-white p-4">
-          <div className="flex items-center gap-3">
-            <div className="h-2 w-2 rounded-full bg-slate-900" />
-            <div className="text-sm text-slate-900">
-              Metin analiz ediliyor... i7 gücü devrede!
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {loading ? <div className="mt-2 text-xs text-slate-600">Analiz hazırlanıyor...</div> : null}
     </main>
   );
 }

@@ -27,43 +27,10 @@ function checkRateLimit(ip: string) {
 }
 
 function mockAnalyze(): AnalyzeResponse {
-  const language = [
-    {
-      title: 'Manipülatif dil sinyalleri olabilir',
-      explanation:
-        'Metinde kesinlik artıran/abartılı ifadeler tespit edilirse güven düşebilir. Bu örnek analiz, API anahtarı olmadan çalıştırılan bir “taslak” yanıttır.',
-      severity: 2,
-    },
-  ];
-  const logic = [
-    {
-      title: 'Mantık kontrolü tamamlanamadı (taslak)',
-      explanation:
-        'Gerçek değerlendirme Gemini çıktısına dayanır. Şu an API anahtarı eklenmediği için örnek kartlar gösterilir.',
-      severity: 1,
-    },
-  ];
-  const context = [
-    {
-      title: 'Bağlamsal doğrulama (taslak)',
-      explanation:
-        'İddianın kaynağı ve destekleyici kanıtlar analiz edilerek puan etkilenir. Bu yanıt, entegrasyonun ekran tarafını doğrulamak için mock’tur.',
-      severity: 1,
-    },
-  ];
-
-  return {
-    score: computeScore({ language, logic, context }),
-    language: [
-      ...language,
-    ],
-    logic: [
-      ...logic,
-    ],
-    context: [
-      ...context,
-    ],
-  };
+  return fallbackAnalyzeFromText(
+    'Bu örnek metindir. Kaynak belirtilmeden kesinlik içeren bir iddia anlatımı vardır.',
+    'Gemini anahtarı bulunamadı'
+  );
 }
 
 function cleanText(input: string) {
@@ -86,9 +53,112 @@ function normalizeModelFindings(arr: Finding[]) {
   }));
 }
 
+function countMatches(text: string, list: string[]) {
+  const lower = text.toLowerCase();
+  return list.reduce((sum, word) => sum + (lower.includes(word) ? 1 : 0), 0);
+}
+
+function fallbackAnalyzeFromText(text: string, reason?: string): AnalyzeResponse {
+  const lower = text.toLowerCase();
+  const words = lower.split(/\s+/).filter(Boolean);
+  const length = lower.length;
+  const avgWordLen = words.length ? words.join('').length / words.length : 0;
+
+  const sensationalCount = countMatches(lower, [
+    'şok',
+    'inanılmaz',
+    'kesin',
+    'asla',
+    'mutlaka',
+    'kanıtlandı',
+    'herkes',
+    'hiç kimse',
+  ]);
+  const uncertaintyCount = countMatches(lower, [
+    'belki',
+    'sanırım',
+    'duydum',
+    'iddia',
+    'muhtemelen',
+    'olabilir',
+  ]);
+  const sourceCount = countMatches(lower, [
+    'kaynak',
+    'rapor',
+    'araştırma',
+    'veri',
+    'istatistik',
+    'makale',
+    'resmi',
+  ]);
+  const logicFlagCount = countMatches(lower, ['çünkü', 'bu yüzden', 'dolayısıyla', 'demek ki']);
+  const hasNumber = /\d/.test(lower);
+
+  const languageSeverity = Math.min(3, Math.max(0, sensationalCount > 2 ? 3 : sensationalCount > 0 ? 2 : 1));
+  const logicSeverity = Math.min(
+    3,
+    Math.max(0, logicFlagCount === 0 && words.length > 20 ? 2 : uncertaintyCount > 2 ? 2 : 1)
+  );
+  const contextSeverity = Math.min(
+    3,
+    Math.max(0, sourceCount === 0 ? 3 : sourceCount === 1 ? 2 : hasNumber ? 1 : 2)
+  );
+
+  const language: Finding[] = [
+    {
+      title: 'Dil sinyali değerlendirmesi',
+      explanation:
+        sensationalCount > 0
+          ? `Metinde ${sensationalCount} adet abartı/kesinlik ifadesi tespit edildi. Bu tarz dil güven skorunu düşürür.`
+          : 'Metinde belirgin manipülatif dil sinyali düşük görünüyor.',
+      excerpt: words.slice(0, 18).join(' '),
+      severity: languageSeverity,
+    },
+  ];
+  const logic: Finding[] = [
+    {
+      title: 'Mantık akışı kontrolü',
+      explanation:
+        logicFlagCount === 0
+          ? 'Neden-sonuç bağları zayıf veya açık değil; çıkarımların dayanağı netleşmedi.'
+          : 'Neden-sonuç bağları mevcut ancak genelleme/tutarlılık riski sürüyor.',
+      severity: logicSeverity,
+    },
+  ];
+  const context: Finding[] = [
+    {
+      title: 'Bağlam ve kaynak kontrolü',
+      explanation:
+        sourceCount === 0
+          ? 'Kaynak/kanıt ifadesi görülmediği için bağlamsal güven düşük değerlendirildi.'
+          : `Kaynak sinyali (${sourceCount}) bulundu, fakat doğrulanabilirlik seviyesi orta riskte.`,
+      severity: contextSeverity,
+    },
+  ];
+
+  if (length < 60 || avgWordLen < 3) {
+    context.push({
+      title: 'Belirsiz metin uyarısı',
+      explanation: 'Metin kısa veya fazla belirsiz olduğu için güven puanı konservatif hesaplandı.',
+      severity: 2,
+    });
+  }
+
+  if (reason) {
+    logic.push({
+      title: 'Fallback analizi devrede',
+      explanation: `Model çıktısı güvenli parse edilemedi (${reason}). Skor metin sinyallerine göre hesaplandı.`,
+      severity: 1,
+    });
+  }
+
+  const score = computeScore({ language, logic, context });
+  return { score, language, logic, context };
+}
+
 async function analyzeWithGemini(text: string): Promise<AnalyzeResponse> {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return mockAnalyze();
+  if (!apiKey) return fallbackAnalyzeFromText(text, 'API anahtarı yok');
 
   // Gemini REST request format: POST .../models/{model}:generateContent
   const model = process.env.GEMINI_MODEL || 'gemini-1.5-pro';
@@ -153,7 +223,7 @@ ${text}`;
           await new Promise((r) => setTimeout(r, 250));
           continue;
         }
-        return mockAnalyze();
+        return fallbackAnalyzeFromText(text, `Gemini HTTP ${res.status}`);
       }
 
       const data = await res.json();
@@ -161,7 +231,7 @@ ${text}`;
         data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text ?? '').join('') ?? '';
 
       const parsed = tryExtractJson(candidateText);
-      if (!parsed) return mockAnalyze();
+      if (!parsed) return fallbackAnalyzeFromText(text, 'JSON parse başarısız');
 
       const languageRaw = Array.isArray(parsed.language) ? parsed.language : [];
       const logicRaw = Array.isArray(parsed.logic) ? parsed.logic : [];
@@ -180,13 +250,13 @@ ${text}`;
         await new Promise((r) => setTimeout(r, 250));
         continue;
       }
-      return mockAnalyze();
+      return fallbackAnalyzeFromText(text, 'Ağ/zaman aşımı hatası');
     } finally {
       clearTimeout(timeout);
     }
   }
 
-  return mockAnalyze();
+  return fallbackAnalyzeFromText(text, 'Bilinmeyen fallback');
 }
 
 export async function POST(req: Request) {
