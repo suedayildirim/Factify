@@ -184,56 +184,69 @@ Bağlamsal doğrulama:
 Metin:
 ${text}`;
 
-  const controller = new AbortController();
-  const timeoutMs = 10_000;
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: {
+      temperature: 0.2,
+      // keep output small for speed/cost; findings are capped anyway
+      maxOutputTokens: 768,
+    },
+  });
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
+  let attempts = 0;
+  for (const timeoutMs of [6500, 4500]) {
+    attempts += 1;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 1024,
-          },
-        }),
+        body,
+      });
+
+      if (!res.ok) {
+        // Retry once for transient errors (rate limits / server errors).
+        if (attempts < 2 && (res.status === 429 || res.status >= 500)) {
+          await new Promise((r) => setTimeout(r, 250));
+          continue;
+        }
+        return mockAnalyze();
       }
-    );
 
-    if (!res.ok) {
-      // In production you'd likely log more, but avoid leaking details to client.
+      const data = await res.json();
+      const candidateText =
+        data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text ?? '').join('') ?? '';
+
+      const parsed = tryExtractJson(candidateText);
+      if (!parsed) return mockAnalyze();
+
+      const languageRaw = Array.isArray(parsed.language) ? parsed.language : [];
+      const logicRaw = Array.isArray(parsed.logic) ? parsed.logic : [];
+      const contextRaw = Array.isArray(parsed.context) ? parsed.context : [];
+
+      const language = normalizeFindings(languageRaw);
+      const logic = normalizeFindings(logicRaw);
+      const context = normalizeFindings(contextRaw);
+
+      const score = computeScore({ language, logic, context });
+
+      return { score, language, logic, context };
+    } catch {
+      // Retry once on network/timeout errors.
+      if (attempts < 2) {
+        await new Promise((r) => setTimeout(r, 250));
+        continue;
+      }
       return mockAnalyze();
+    } finally {
+      clearTimeout(timeout);
     }
-
-    const data = await res.json();
-    const candidateText =
-      data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text ?? '').join('') ??
-      '';
-
-    const parsed = tryExtractJson(candidateText);
-    if (!parsed) return mockAnalyze();
-
-    const languageRaw = Array.isArray(parsed.language) ? parsed.language : [];
-    const logicRaw = Array.isArray(parsed.logic) ? parsed.logic : [];
-    const contextRaw = Array.isArray(parsed.context) ? parsed.context : [];
-
-    const language = normalizeFindings(languageRaw);
-    const logic = normalizeFindings(logicRaw);
-    const context = normalizeFindings(contextRaw);
-
-    const score = computeScore({ language, logic, context });
-
-    return { score, language, logic, context };
-  } catch {
-    return mockAnalyze();
-  } finally {
-    clearTimeout(timeout);
   }
+
+  return mockAnalyze();
 }
 
 export async function POST(req: Request) {
@@ -273,6 +286,12 @@ export async function POST(req: Request) {
     const input = normalized.slice(0, 20_000);
 
     const result = await analyzeWithGemini(input);
+    // PII-free operational log (no raw text, no IP).
+    console.log('[factify] analyze', {
+      ms: Date.now() - startedAt,
+      inputChars: input.length,
+      usedMock: !process.env.GEMINI_API_KEY,
+    });
     return NextResponse.json(result, {
       status: 200,
       headers: { 'x-factify-ms': String(Date.now() - startedAt) },
