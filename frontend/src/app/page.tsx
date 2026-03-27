@@ -173,13 +173,13 @@ export default function HomePage() {
         </p>
       </header>
 
-      <section className="rounded-xl border border-slate-800 bg-slate-950/30 p-5">
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
         <label className="mb-2 block text-sm font-semibold text-slate-200">Metin Girişi</label>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Örneğin: 'Bu iddia şu sebeple kesinlikle doğrudur...' şeklinde şüpheli metni buraya yapıştır."
-          className="min-h-40 w-full resize-none rounded-lg bg-slate-900 p-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-slate-800 focus:ring-slate-600"
+          className="min-h-40 w-full resize-none rounded-2xl bg-black/20 p-3 text-sm text-white placeholder:text-white/50 outline-none ring-1 ring-white/10 focus:ring-white/25"
           minLength={20}
           maxLength={10_000}
         />
@@ -200,7 +200,7 @@ export default function HomePage() {
       </section>
 
       {result ? (
-        <section className="mt-6 rounded-xl border border-slate-800 bg-slate-950/30 p-5">
+        <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
           <ScoreColor score={score} />
 
           <div className="mt-5 grid gap-4 md:grid-cols-1">
@@ -221,11 +221,11 @@ export default function HomePage() {
       ) : null}
 
       {history.length ? (
-        <section className="mt-6 rounded-xl border border-slate-800 bg-slate-950/20 p-5">
+        <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold text-slate-200">Geçmiş</h2>
             <button
-              className="ml-auto rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 ring-1 ring-slate-800 hover:bg-slate-800"
+              className="ml-auto rounded-md bg-black/20 px-3 py-1.5 text-xs font-semibold text-white ring-1 ring-white/10 hover:bg-black/30"
               onClick={() => {
                 localStorage.removeItem('factify.history');
                 setHistory([]);
@@ -238,16 +238,16 @@ export default function HomePage() {
             {history.map((h) => (
               <button
                 key={h.at}
-                className="rounded-lg border border-slate-800 bg-slate-900/30 p-3 text-left hover:bg-slate-900/50"
+                className="rounded-xl border border-white/10 bg-black/10 p-3 text-left hover:bg-black/20"
                 onClick={() => setText(h.text)}
               >
                 <div className="flex items-center gap-2">
-                  <div className="text-xs font-semibold text-slate-200">Skor: {h.score}%</div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs font-semibold text-white">Skor: {h.score}%</div>
+                  <div className="text-xs text-white/50">
                     {new Date(h.at).toLocaleString('tr-TR')}
                   </div>
                 </div>
-                <div className="mt-1 line-clamp-2 text-xs text-slate-300">{h.preview}</div>
+                <div className="mt-1 line-clamp-2 text-xs text-white/80">{h.preview}</div>
               </button>
             ))}
           </div>
