@@ -1,78 +1,31 @@
-# Factify
+# 🔍 Factify: AI Tabanlı Evrensel Doğrulama Motoru
 
-Factify, supheli haber veya iddia metinlerini analiz ederek kullaniciya bir guven skoru ve aciklayici bulgular sunan Next.js tabanli bir uygulamadir.
+> **"Bilgi kirliliği çağında, her iddianın bir 'Cerrahi Filtre'ye ihtiyacı vardır."**
 
-## Ozellikler
+## 🚀 Proje Hakkında (Portfolyo Özeti)
+Factify, bilgi kirliliğinin dijital ekosistemi tehdit ettiği günümüzde, ham metinleri akademik ve mantıksal bir süzgeçten geçiren ileri nesil bir **"Doğrulama Asistanı"**dır. Sadece bir "doğru/yanlış" mekanizması olmanın ötesine geçerek, bilginin güvenilirliğini matematiksel bir **"Cerrahi Kriterler"** algoritmasıyla skorlamaktadır.
 
-- Metin girisi ile hizli analiz baslatma
-- 0-100 arasi guven skoru gosterimi
-- Dil analizi, mantik kontrolu ve baglamsal dogrulama bolumleri
-- Yukleme ve hata durumlarinda anlik geri bildirim
+## 🔬 "Cerrahi Kriterler" Analiz Algoritması
+Factify, bir metni dört ana katmanda analiz ederek **%25 (Yüksek Risk)** ile **%96 (Tam Güven)** arasında dinamik bir sonuç üretir:
+*   **Dil Analizi:** Sansasyonel ifadeler ve manipülatif dil kullanımı tespiti.
+*   **Kaynak Güvenilirliği:** Resmi kurum onayı, tarih ve yer bilgisi kontrolü.
+*   **Mantık Filtresi:** İddia ile sonuç arasındaki sebep-sonuç ilişkisinin tutarlılığı.
+*   **Duygu Analizi:** Kullanıcıda panik veya gereksiz heyecan uyandırma çabaları.
 
-## Proje Yapisi
+## 🛠️ Teknik Mimari
+- **AI Engine:** GPT-4o entegrasyonu ile Doğal Dil İşleme.
+- **Frontend:** Next.js (TypeScript) & Tailwind CSS.
+- **Backend Architecture:** Modüler **Agents** yapısı (Analysis Agent).
+- **Platform:** Lovable.dev, Vercel & GitHub.
 
-- `frontend/`: Next.js uygulamasi (UI + API route)
-- `prd.md`: urun gereksinimleri
-- `tasks.md`: gorev listesi
-- `tech-stack.md`: teknoloji secimleri
-- `user-flow.md`: kullanici akisi
+---
 
-## Gereksinimler
+## 💻 Teknik Kullanım Kılavuzu (Development)
 
-- Node.js `18+`
-- npm
-
-## Kurulum
+### Gereksinimler & Kurulum
+- Node.js `18+` ve npm gereklidir.
 
 ```bash
 cd frontend
 npm install
-```
-
-## Gelistirme Ortami
-
-```bash
-cd frontend
 npm run dev
-```
-
-Uygulama varsayilan olarak `http://localhost:3000` adresinde calisir.
-
-## Production Build
-
-```bash
-cd frontend
-npm run build
-npm run start
-```
-
-## Ortam Degiskenleri
-
-`frontend/.env.example` dosyasini referans alip `frontend/.env` olusturun.
-
-## Deploy (Vercel)
-
-- Repo kokunde `vercel.json` var; Vercel projesini bu repo ile baglayinca `frontend/` dizinini proje kok dizini olarak kullanir.
-- Vercel panelinden `GEMINI_API_KEY` ortam degiskenini ekleyin (Production + Preview).
-
-## Test
-
-Unit + API integration:
-
-```bash
-cd frontend
-npm run test:run
-```
-
-E2E (Playwright):
-
-```bash
-cd frontend
-# ilk kez calistiracaksan:
-npx playwright install
-npm run test:e2e
-```
-
-## Lisans
-
-Bu proje su an icin ozel/deneysel gelistirme kapsamindadir.
