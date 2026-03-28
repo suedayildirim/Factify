@@ -1,6 +1,8 @@
 # 🔍 Factify: AI Tabanlı Evrensel Doğrulama Motoru
 
 > **"Bilgi kirliliği çağında, her iddianın bir 'Cerrahi Filtre'ye ihtiyacı vardır."**
+> ## 🌐 Canlı Uygulama
+https://factify-maker.lovable.app
 
 ## 🚀 Proje Hakkında (Portfolyo Özeti)
 Factify, bilgi kirliliğinin dijital ekosistemi tehdit ettiği günümüzde, ham metinleri akademik ve mantıksal bir süzgeçten geçiren ileri nesil bir **"Doğrulama Asistanı"**dır. Sadece bir "doğru/yanlış" mekanizması olmanın ötesine geçerek, bilginin güvenilirliğini matematiksel bir **"Cerrahi Kriterler"** algoritmasıyla skorlamaktadır.
