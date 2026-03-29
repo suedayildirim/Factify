@@ -9,7 +9,9 @@
 
 ##  Proje Hakkında (Portfolyo Özeti)
 **Problem Tanımı:** Bilgi çağının en kritik yan etkilerinden biri olan dezenformasyon, günümüzde sadece bireysel bir yanılgı değil, toplumsal bilgi akışını ve dijital ekosistemi tehdit eden sistemik bir sorundur. Özellikle sağlık iddiaları ve resmi duyurular gibi kritik alanlarda, bilginin doğruluğunu teyit etmek her geçen gün daha karmaşık hale gelmektedir. Factify, bu kaotik bilgi ortamında "güvenilir liman" olma amacıyla geliştirilmiş, ham metinleri akademik, dilbilimsel ve mantıksal bir süzgeçten geçiren ileri nesil bir Doğrulama Asistanıdır.
+
 **Teknik Altyapı:** Factify, geleneksel ve ikili (doğru/yanlış) çalışan kısıtlı mekanizmaların ötesine geçerek; bilginin güvenilirliğini özgün bir "Cerrahi Kriterler" algoritmasıyla analiz etmektedir. Bu algoritma, bir metni sadece kelime bazlı değil, yapısal ve bağlamsal olarak beş ana modül üzerinden matematiksel bir modellemeyle skorlar.
+
 Temel Odak Noktaları:
 *   **Dil Analizi:** Sansasyonel ifadeler ve manipülatif dil kullanımı tespiti.
 *   **Duygu Analizi:** Kullanıcıda panik veya gereksiz heyecan uyandırma çabaları.
