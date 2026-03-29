@@ -21,7 +21,7 @@ Temel Odak Noktaları:
 
 ## 🛠️ Teknik Mimari
 - **Hazırlık:** Claude, Gemini, Chatgpt, Perplexity
-- **Geliştirme:**Cursor, HTML5, CSS3, JavaScript
+- **Geliştirme:** Cursor, HTML5, CSS3, JavaScript
 - **AI Engine:** GPT-4o entegrasyonu ile Doğal Dil İşleme.
 - **Frontend:** Next.js (TypeScript) & Tailwind CSS.
 - **Backend Architecture:** Modüler **Agents** yapısı (Analysis Agent).
@@ -30,7 +30,7 @@ Temel Odak Noktaları:
 ---
 
 ## 💻 Teknik Kullanım Kılavuzu (Development)
-
+## Cursor için
 ### Gereksinimler & Kurulum
 - Node.js `18+` ve npm gereklidir.
 
