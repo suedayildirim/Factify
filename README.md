@@ -1,8 +1,8 @@
 # 🔍 Factify: AI Tabanlı Evrensel Doğrulama Motoru
+**" Gerçeğin İzinde, Şüphenin Ötesinde."**
 
-> **" Gerçeğin İzinde, Şüphenin Ötesinde."**
 > ## 🌐 Canlı Uygulama
-https://factify-maker.lovable.app
+> https://factify-maker.lovable.app
 
 > ## Video-Sunum
 > https://www.loom.com/share/833dda360e9a4474a8e9fd6c88f60cc9
