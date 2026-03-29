@@ -1,0 +1,1 @@
+Bu proje, GPT-4o entegrasyonu ile çalışan bir Reasoning Agent (Akıl Yürütme Ajanı) yapısını kullanır. Ajan, ham metni alır ve 'Cerrahi Kriterler' metodolojisiyle (Dil, Duygu, Mantık, Bağlam, Kaynak) otonom olarak analiz eder.
