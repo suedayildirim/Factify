@@ -1,6 +1,6 @@
 # 🔍 Factify: AI Tabanlı Evrensel Doğrulama Motoru
 
-> **"Bilgi kirliliği çağında, her iddianın bir 'Cerrahi Filtre'ye ihtiyacı vardır."**
+> **" "Gerçeğin İzinde, Şüphenin Ötesinde.""**
 > ## 🌐 Canlı Uygulama
 https://factify-maker.lovable.app
 
