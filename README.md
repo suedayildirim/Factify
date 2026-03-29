@@ -4,7 +4,7 @@
 > ## 🌐 Canlı Uygulama
 https://factify-maker.lovable.app
 
-> ## Video
+> ## Video-Sunum
 > https://www.loom.com/share/833dda360e9a4474a8e9fd6c88f60cc9
 
 ##  Proje Hakkında (Portfolyo Özeti)
