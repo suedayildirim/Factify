@@ -30,7 +30,7 @@ Temel Odak Noktaları:
 - *Hazırlık:* Claude, Gemini, Chatgpt, Perplexity
 - *Geliştirme:* Cursor, HTML5, CSS3, JavaScript
 - *AI Engine:* GPT-4o entegrasyonu ile Doğal Dil İşleme.
-- *Frontend:* Next.js (TypeScript) & Tailwind CSS.
+- *Frontend:* Next.js (TypeScript) & Tailwind CSS. Cursor, HTML5, CSS3, JavaScript
 - *Backend Architecture:* Modüler *Agents* yapısı (Analysis Agent).
 - *Platform:* Lovable.dev, GitHub.
 
