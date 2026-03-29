@@ -4,8 +4,10 @@
 > ## 🌐 Canlı Uygulama
 > https://factify-maker.lovable.app
 
-> ## Video-Sunum
+> ## Video
 > https://www.loom.com/share/833dda360e9a4474a8e9fd6c88f60cc9
+> ## Sunum
+> https://canva.link/rcsk2yxtq8mlvy2
 
 📂 **Proje Yapısı Hakkında:** Projenin tüm fonksiyonel kodları ve ana özellikleri *(features)*, uygulama mimarisi gereği frontend/src/features klasörü altında yapılandırılmıştır. Proje ile ilgili fotoğraflar frontend/src/assest klasörü içindedir.
 
